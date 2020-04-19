@@ -30,8 +30,9 @@ message ReadAgentReply{
 
 
 message UpdateAgentRequest{
-	string name = 1;
-	int32 contactNumber = 2;
+	int32 id = 1;
+	string name = 2;
+	int32 contactNumber = 3;
 }
 
 message UpdateAgentReply{

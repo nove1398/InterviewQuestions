@@ -6,6 +6,7 @@ using Interview.Api.Data;
 using Interview.Api.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace Interview.Api.Controllers
@@ -30,7 +31,7 @@ namespace Interview.Api.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create([FromBody] Agent newAgent)
+        public async Task<IActionResult> Create([FromBody] Agent newAgent)
         {
             if(newAgent != null)
             {
@@ -38,22 +39,36 @@ namespace Interview.Api.Controllers
                 tempAgent.ContactNumber = newAgent.ContactNumber;
                 tempAgent.Name = newAgent.Name.Trim();
                 _context.Agents.Add(tempAgent);
-                _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
                 return CreatedAtAction("Create",new JsonResult(new { response = "Created agent" }));
             }
             else
             {
 
-                return CreatedAtAction("Create",new JsonResult(new { response = "Invalid agent data" }));
+                return BadRequest(new JsonResult(new { response = "Invalid agent data" }));
             }
        
         }
 
-        [HttpGet("{contact:int?}/{name}")]
-        public IActionResult Read(int? contact = null, string name = null)
+        [HttpGet]
+        public async Task<IActionResult> Read(int? contact = null, string name = null)
         {
             //Read either by number or name
-            return Ok(new JsonResult(new { test = "R" }));
+            if (!string.IsNullOrEmpty(name))
+            {
+                var agents = await _context.Agents.AsNoTracking().Where(a => a.Name.Contains(name)).ToListAsync();
+                return Ok(new JsonResult(new { response= "Agents found", data = agents }));
+            }
+            else if(contact.HasValue)
+            {
+                var agent = await _context.Agents.AsNoTracking().FirstOrDefaultAsync(a => a.ContactNumber == contact);
+                return Ok(new JsonResult(new { response ="Agent found", data = agent }));
+            }
+            else
+            {
+                 return NotFound(new JsonResult(new { response = "Invalid search criteria" }));
+
+            }
         }
 
         [HttpPut("{id:int}")]
@@ -71,12 +86,10 @@ namespace Interview.Api.Controllers
                 tempAgent.ContactNumber = newAgent.ContactNumber;
                 tempAgent.Name = newAgent.Name.Trim();
                 await _context.SaveChangesAsync();
+                return Ok(new JsonResult(new { response = "Agent updated" }));
             }
-            else
-            {
-                return BadRequest(new JsonResult(new { response = "No agents by that ID" }));
-            }
-            return Ok(new JsonResult(new { response = "Agent updated" }));
+                return NotFound(new JsonResult(new { response = "No agents by that ID" }));
+            
         }
 
         [HttpDelete("{id:int}")]
@@ -87,17 +100,17 @@ namespace Interview.Api.Controllers
                 return BadRequest(new JsonResult(new { response = "No agents by that ID" }));
             }
 
-            var tempAgent = _context.Agents.FirstOrDefault(a => a.AgentId == id);
+            var tempAgent = await  _context.Agents.FirstOrDefaultAsync(a => a.AgentId == id);
             if (tempAgent != null)
             {
                 _context.Agents.Remove(tempAgent);
                 await _context.SaveChangesAsync();
-                return Ok(new JsonResult(new { test = "D" }));
+                return Ok(new JsonResult(new { response = "Agent deleted" }));
             }
             else
             {
 
-                return Ok(new JsonResult(new { response = "Invalid agent" }));
+                return NotFound(new JsonResult(new { response = "Invalid agent ID" }));
             }
 
         }
