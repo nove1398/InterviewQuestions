@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Grpc.Net.Client;
+using Interview.gRPC;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using static Interview.Client.Program;

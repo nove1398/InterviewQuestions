@@ -20,7 +20,7 @@ namespace Interview.Api.Controllers
             _ilog = ilogger;
         }
 
-        [HttpGet]
+        [HttpGet("Test")]
         public IActionResult Test()
         {
             return Ok(new JsonResult(new { test = "val" }));
@@ -32,15 +32,17 @@ namespace Interview.Api.Controllers
             return CreatedAtAction("Create",new JsonResult(new { test = newAgent.Name }));
         }
 
-        [HttpGet("{id:int}")]
-        public IActionResult Read()
+        [HttpGet("{contact:int?}/{name:string?}")]
+        public IActionResult Read(int? contact = null, string name = null)
         {
+            //Read either by number or name
             return Ok(new JsonResult(new { test = "R" }));
         }
 
         [HttpPut("{id:int}")]
-        public IActionResult Update()
+        public IActionResult Update([FromBody] Agent newAgent)
         {
+            //Update existing
             return Ok(new JsonResult(new { test = "U" }));
         }
 

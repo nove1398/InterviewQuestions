@@ -1,4 +1,8 @@
-﻿using System;
+﻿using Grpc.Core;
+using Grpc.Net.Client;
+using Interview.gRPC;
+using System;
+using System.Threading.Tasks;
 
 namespace Interview.Client
 {
@@ -6,8 +10,21 @@ namespace Interview.Client
     {
         public static InterviewMain init;
 
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
+            var request = new CreateAgentRequest { Name = "joe",ContactNumber = 1234567891 };
+            var channel = GrpcChannel.ForAddress("https://localhost:5001");
+            var client = new AgentManager.AgentManagerClient(channel);
+            using (var reply = client.Read(new ReadAgentRequest()))
+            {
+                while (await reply.ResponseStream.MoveNext())
+                {
+                    var current = reply.ResponseStream.Current;
+                    Console.WriteLine($"{current.Response}");
+
+                }
+            }
+            Console.ReadLine();
 
             init = new InterviewMain();
             init.LoadMenu();
