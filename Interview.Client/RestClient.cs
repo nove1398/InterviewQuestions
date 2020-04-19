@@ -1,4 +1,5 @@
-﻿using Interview.Api.Models;
+﻿
+using Interview.Shared.Models;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -30,7 +31,7 @@ namespace Interview.Client
             Console.Clear();
             Console.WriteLine("-===++~ REST Client ~++===-");
             Console.WriteLine("---------------------------------");
-            Console.WriteLine("1. Create 2. Read 3. Update 4. Delete 5. Main Menu");
+            Console.WriteLine("1. Create \n2. Read \n3. Update \n4. Delete \n5. Main Menu");
             var input = Console.ReadLine();
             if (int.TryParse(input, out int selectedOption))
             {

@@ -1,4 +1,5 @@
-﻿using Grpc.Net.Client;
+﻿using Grpc.Core;
+using Grpc.Net.Client;
 using Interview.gRPC;
 using System;
 using System.Collections.Generic;
@@ -21,29 +22,29 @@ namespace Interview.Client
             Console.Clear();
             Console.WriteLine("-===++~gRPC Client~++===-");
             Console.WriteLine("---------------------------------");
-            Console.WriteLine("1. Create 2. Read 3. Update 4. Delete 5. Main Menu");
+            Console.WriteLine("1. Create \n2. Read \n3. Update \n4. Delete \n5. Main Menu");
             var input = Console.ReadLine();
             if (int.TryParse(input, out int selectedOption))
             {
                 switch (selectedOption)
                 {
                     case 1:
-                        Create();
+                        await Create();
                         break;
                     case 2:
-                        Read();
+                        await Read();
                         break;
                     case 3:
-                        Update();
+                        await Update();
                         break;
                     case 4:
-                        Delete();
+                        await Delete();
                         break;
                     case 5:
                         await init.LoadMenu();
                         break;
                     default:
-                        ErrorDisplay();
+                        await ErrorDisplay();
                         break;
                 }
 
@@ -54,9 +55,8 @@ namespace Interview.Client
             }
         }
 
-        private void Delete(bool error = false)
+        private async Task Delete(bool error = false)
         {
-            Console.Clear();
             if (error)
             {
                 Error();
@@ -69,15 +69,19 @@ namespace Interview.Client
             var input = Console.ReadLine();
             if (int.TryParse(input, out int id))
             {
-                Console.WriteLine($"{id} deleted");
+                var request = new DeleteAgentRequest { Id = id};
+                var channel = GrpcChannel.ForAddress("https://localhost:5001");
+                var client = new AgentManager.AgentManagerClient(channel);
+                var reply = await client.DeleteAsync(request);
+                await PrintResults(reply.Response);
             }
             else
             {
-                Delete(true);
+                await Delete(true);
             }
         }
 
-        private void Update(bool error = false)
+        private async Task Update(bool error = false)
         {
             if (error)
             {
@@ -86,6 +90,22 @@ namespace Interview.Client
             Console.WriteLine("    Update    ");
             Console.WriteLine("++++++++++++++");
             Console.WriteLine("");
+            Console.WriteLine("Enter the agent ID# you wish to update:");
+            var idNumber = Console.ReadLine().Trim();
+            Console.WriteLine("Enter the new agent name:");
+            var name = Console.ReadLine().Trim();
+            Console.WriteLine("Enter the new agent contact number:");
+            var contact = Console.ReadLine().Trim();
+
+            //Make update web call
+            if (int.TryParse(contact, out int contactNumber) && int.TryParse(idNumber, out int id))
+            {
+                var request = new UpdateAgentRequest {Id = id, Name = name.Trim(),ContactNumber = contactNumber };
+                var channel = GrpcChannel.ForAddress("https://localhost:5001");
+                var client = new AgentManager.AgentManagerClient(channel);
+                var reply = await client.UpdateAsync(request);
+                await PrintResults(reply.Response);
+            }
         }
 
         private async Task Read(bool error = false)
@@ -97,10 +117,56 @@ namespace Interview.Client
             Console.WriteLine("    Read    ");
             Console.WriteLine("++++++++++++++");
             Console.WriteLine("");
+            Console.WriteLine("Do you want to search by agent (1) name or (2) contact number?");
+            var updateType = Console.ReadLine();
+            Console.WriteLine();
 
+            if (int.TryParse(updateType, out int type))
+            {
+                switch (type)
+                {
+                    case 1:
+                        //Search by name
+                        Console.WriteLine("Enter the name to search for:");
+                        var searchName = Console.ReadLine();
+                        var request = new ReadAgentRequest { Name = searchName.Trim() };
+                        var channel = GrpcChannel.ForAddress("https://localhost:5001");
+                        var client = new AgentManager.AgentManagerClient(channel);
+                        using (var reply = client.ReadList(request))
+                        {
+                            if(reply != null)
+                            {
+                                while (await reply.ResponseStream.MoveNext())
+                                {
+                                    var current = reply.ResponseStream.Current;
+                                    Console.WriteLine($"{current.Name} {current.ContactNumber}");
+                                }
+                            }   
+                        }
+                        break;
+                    case 2:
+                        //Search by contact
+                        Console.WriteLine("Enter the contact number to search for:");
+                        var contactNumber = Console.ReadLine();
+                        if (int.TryParse(contactNumber, out int contact))
+                        {
+                            var request2 = new ReadAgentRequest { ContactNumber = contact };
+                            var channel2 = GrpcChannel.ForAddress("https://localhost:5001");
+                            var client2 = new AgentManager.AgentManagerClient(channel2);
+                            var reply = client2.ReadSingle(request2);
+                            if(reply != null)
+                                await PrintResults($"{reply.Id} {reply.Name} {reply.ContactNumber}");
+                        }
+
+                        Console.WriteLine("Press 'Enter' to continue...");
+                        Console.ReadLine();
+                        await LoadMenu();
+                        break;
+                }
+            }
         }
 
-        private void Create(bool error = false)
+        private async Task Create(bool error = false)
         {
             if (error)
             {
@@ -109,6 +175,29 @@ namespace Interview.Client
             Console.WriteLine("    Create    ");
             Console.WriteLine("++++++++++++++");
             Console.WriteLine("");
+            Console.WriteLine("Enter the agent name:");
+            var name = Console.ReadLine().Trim();
+            Console.WriteLine("Enter the agent contact number:");
+            var contact = Console.ReadLine().Trim();
+
+            //Make web call
+            if (int.TryParse(contact, out int contactNumber))
+            {
+                var request = new CreateAgentRequest { Name = name, ContactNumber = contactNumber };
+                var channel = GrpcChannel.ForAddress("https://localhost:5001");
+                var client = new AgentManager.AgentManagerClient(channel);
+                var result = await client.CreateAsync(request);
+                await PrintResults(result.Response);
+            }
+        }
+
+        private async Task PrintResults(string input)
+        {
+            Console.WriteLine($"{input}");
+            Console.WriteLine("");
+            Console.WriteLine("Press 'Enter' to continue");
+            Console.ReadLine();
+            await LoadMenu();
         }
 
         private void Error()

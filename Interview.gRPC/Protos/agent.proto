@@ -5,7 +5,8 @@ option csharp_namespace = "Interview.gRPC";
 
 service AgentManager {
 	rpc Create (CreateAgentRequest) returns (CreateAgentReply);
-	rpc Read (ReadAgentRequest) returns (stream ReadAgentReply);
+	rpc ReadList (ReadAgentRequest) returns (stream ReadAgentReply);
+	rpc ReadSingle (ReadAgentRequest) returns (ReadAgentReply);
 	rpc Update (UpdateAgentRequest) returns (UpdateAgentReply);
 	rpc Delete (DeleteAgentRequest) returns (DeleteAgentReply);
 }
@@ -25,7 +26,9 @@ message ReadAgentRequest{
 }
 
 message ReadAgentReply{
-	string response = 1;
+	int32 id = 1;
+	string name = 2;
+	int32 contactNumber = 3;
 }
 
 

@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Interview.gRPC\Interview.gRPC.csproj" />
+    <ProjectReference Include="..\Interview.Shared\Interview.Shared.csproj" />
   </ItemGroup>
 
 
