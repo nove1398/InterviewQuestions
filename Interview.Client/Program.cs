@@ -9,6 +9,7 @@ namespace Interview.Client
     class Program
     {
         public static InterviewMain init;
+        private static string UserName = "";
 
         static async Task Main(string[] args)
         {
@@ -24,7 +25,8 @@ namespace Interview.Client
 
                 }
             }
-            Console.ReadLine();
+            Console.WriteLine("What would you like to be called?");
+            UserName = Console.ReadLine()?.Trim() ?? "Unknown soldier" ;
 
             init = new InterviewMain();
             init.LoadMenu();
@@ -45,9 +47,9 @@ namespace Interview.Client
             {
                 Console.Clear();
                 Console.WriteLine("++++++++++ Main Menu ++++++++++");
-                Console.WriteLine("Choose your client type");
-                Console.WriteLine("1. gRPC calls");
-                Console.WriteLine("2. REST calls");
+                Console.WriteLine("What would you like to work with today?");
+                Console.WriteLine("1. gRPC Client");
+                Console.WriteLine("2. REST Client");
                 Console.WriteLine("3. Exit");
                 var input = Console.ReadLine();
                 if (int.TryParse(input, out int selectedOption))

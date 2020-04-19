@@ -14,8 +14,14 @@ namespace Interview.Api.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            List<Agent> defaultAgents = new List<Agent>();
+            for(int i = 1; i < 50; i++)
+            {
+                defaultAgents.Add(new Agent() { AgentId = i, ContactNumber = 123453231, Name = $"john doe{i}" });
+            }
             modelBuilder.Entity<Agent>(entity =>
             {
+                entity.HasData(defaultAgents);
                 entity.Property(a => a.Name).IsRequired().HasMaxLength(15);
                 entity.Property(a => a.ContactNumber).IsRequired().HasColumnType("int");
             });

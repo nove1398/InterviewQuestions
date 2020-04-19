@@ -20,8 +20,8 @@ message CreateAgentReply{
 }
 
 message ReadAgentRequest{
-	string name = 1;
-	int32 contactNumber = 2;
+	 string name = 1;
+	 int32 contactNumber = 2;
 }
 
 message ReadAgentReply{

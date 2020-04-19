@@ -40,7 +40,7 @@ namespace Interview.gRPC.Services
             {
                 //Find by both
             }
-            return base.Read(request, responseStream, context);
+            return null;
         }
 
 
