@@ -1,4 +1,4 @@
-# InterviewQuestions
+# Interview Questions
 
 Database backed by LocalDB 
 EF Core for the data access layer.
