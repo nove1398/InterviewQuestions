@@ -13,18 +13,6 @@ namespace Interview.Client
 
         static async Task Main(string[] args)
         {
-            /*var request = new CreateAgentRequest { Name = "joe",ContactNumber = 1234567891 };
-            var channel = GrpcChannel.ForAddress("https://localhost:5001");
-            var client = new AgentManager.AgentManagerClient(channel);
-            using (var reply = client.Read(new ReadAgentRequest()))
-            {
-                while (await reply.ResponseStream.MoveNext())
-                {
-                    var current = reply.ResponseStream.Current;
-                    Console.WriteLine($"{current.Response}");
-
-                }
-            }*/
             Console.WriteLine("What would you like to be called?");
             string userName = Console.ReadLine()?.Trim() ?? "Unknown soldier" ;
 
