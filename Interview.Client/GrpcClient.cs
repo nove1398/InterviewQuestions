@@ -65,7 +65,7 @@ namespace Interview.Client
             Console.WriteLine("    Delete    ");
             Console.WriteLine("++++++++++++++");
             Console.WriteLine("");
-            Console.WriteLine("Enter id of agent to delete:");
+            Console.WriteLine("Enter ID of agent to delete:");
             var input = Console.ReadLine();
             if (int.TryParse(input, out int id))
             {
@@ -157,12 +157,11 @@ namespace Interview.Client
                             if(reply != null)
                                 await PrintResults($"{reply.Id} {reply.Name} {reply.ContactNumber}");
                         }
-
-                        Console.WriteLine("Press 'Enter' to continue...");
-                        Console.ReadLine();
-                        await LoadMenu();
                         break;
                 }
+                Console.WriteLine("Press 'Enter' to continue...");
+                Console.ReadLine();
+                await LoadMenu();
             }
         }
 

@@ -45,14 +45,7 @@ namespace Interview.gRPC.Services
 
         public override async Task ReadList(ReadAgentRequest request, IServerStreamWriter<ReadAgentReply> responseStream, ServerCallContext context)
         {
-            
-
-            if (request.ContactNumber == 0)
-            {
-                //Find by name
-                var agent = await _context.Agents.AsNoTracking().FirstOrDefaultAsync(a => a.ContactNumber == request.ContactNumber);
-            }
-            else if (string.IsNullOrEmpty(request.Name))
+            if (!string.IsNullOrEmpty(request.Name))
             {
                 //Find by number
                 var agents = await _context.Agents.AsNoTracking().Where(a => a.Name.Contains(request.Name)).ToListAsync();
@@ -61,8 +54,6 @@ namespace Interview.gRPC.Services
                     await responseStream.WriteAsync(new ReadAgentReply { Id = agent.AgentId, Name = agent.Name, ContactNumber = agent.ContactNumber });
                 }
             }
-           
-           
         }
 
 
