@@ -142,13 +142,14 @@ namespace Interview.Client
                         var httpresponse = await _http.GetAsync($"?name={searchName}").ConfigureAwait(false);
                         var response = await httpresponse.Content.ReadAsStringAsync();
                         var results = JsonConvert.DeserializeObject<ApiResponse>(response);
-                        foreach (var item in results.DataList)
+                        if(results.DataList != null)
                         {
-                            Console.WriteLine($"{item.AgentId} | {item.Name}  | {item.ContactNumber}");
-                            Console.WriteLine("Press 'Enter' to continue...");
-                            Console.ReadLine();
-                            await LoadMenu();
+                            foreach (var item in results.DataList)
+                            {
+                                Console.WriteLine($"{item.AgentId} | {item.Name}  | {item.ContactNumber}");
+                            }
                         }
+                        
                         break;
                     case 2:
                         //Search by contact
@@ -157,12 +158,13 @@ namespace Interview.Client
                         var httpResponse2 = await _http.GetAsync($"?contact={searchContact}");
                         var response2 = await httpResponse2.Content.ReadAsStringAsync();
                         var api = JsonConvert.DeserializeObject<ApiResponse>(response2);
-                        Console.WriteLine($"{api.Data.AgentId} | {api.Data.Name}  | {api.Data.ContactNumber}");
-                        Console.WriteLine("Press 'Enter' to continue...");
-                        Console.ReadLine();
-                        await LoadMenu();
+                        if(api.Data != null)
+                            Console.WriteLine($"{api.Data.AgentId} | {api.Data.Name}  | {api.Data.ContactNumber}");
                         break;
                 }
+                Console.WriteLine("Press 'Enter' to continue...");
+                Console.ReadLine();
+                await LoadMenu();
             }
         }
 

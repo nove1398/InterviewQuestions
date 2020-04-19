@@ -24,12 +24,6 @@ namespace Interview.Api.Controllers
             _context = context;
         }
 
-        [HttpGet("Test")]
-        public IActionResult Test()
-        {
-            return Ok(new JsonResult(new { test = "val" }));
-        }
-
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] Agent newAgent)
         {
@@ -40,7 +34,7 @@ namespace Interview.Api.Controllers
                 tempAgent.Name = newAgent.Name.Trim();
                 _context.Agents.Add(tempAgent);
                 await _context.SaveChangesAsync();
-                return CreatedAtAction("Create",new JsonResult(new ApiResponse { Response = "Created agent" }));
+                return new JsonResult(new ApiResponse { Response = "Created agent" });
             }
             else
             {
