@@ -3,52 +3,40 @@ syntax = "proto3";
 option csharp_namespace = "Interview.gRPC";
 
 
-service AgentManager {
-	rpc Create (CreateAgentRequest) returns (CreateAgentReply);
-	rpc ReadList (ReadAgentRequest) returns (stream ReadAgentReply);
-	rpc ReadSingle (ReadAgentRequest) returns (ReadAgentReply);
-	rpc Update (UpdateAgentRequest) returns (UpdateAgentReply);
-	rpc Delete (DeleteAgentRequest) returns (DeleteAgentReply);
+service AgentManagerService {
+	rpc Create (AgentModel) returns (AgentTextResponse);
+	rpc ReadList (ReadAgentRequest) returns (stream AgentModel);
+	rpc ReadSingle (ReadAgentRequest) returns (AgentModel);
+	rpc Update (AgentModel) returns (AgentTextResponse);
+	rpc Delete (DeleteAgentRequest) returns (AgentTextResponse);
 }
 
-message CreateAgentRequest{
-	string name = 1;
-	int32 contactNumber = 2;
-}
-
-message CreateAgentReply{
-	string response = 1;
-}
 
 message ReadAgentRequest{
 	 string name = 1;
 	 int32 contactNumber = 2;
 }
 
-message ReadAgentReply{
-	int32 id = 1;
-	string name = 2;
-	int32 contactNumber = 3;
-}
-
-
-message UpdateAgentRequest{
-	int32 id = 1;
-	string name = 2;
-	int32 contactNumber = 3;
-}
-
-message UpdateAgentReply{
-	string response = 1;
-}
 
 message DeleteAgentRequest{
 	int32 id = 1;
 }
 
-message DeleteAgentReply{
+message AgentTextResponse {
 	string response = 1;
 }
+
+message AgentModel{
+	int32 id = 1;
+	string name = 2;
+	int32 contactNumber = 3;
+}
+
+
+
+
+
+
 
 
 

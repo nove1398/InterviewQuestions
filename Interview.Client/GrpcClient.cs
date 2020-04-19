@@ -71,7 +71,7 @@ namespace Interview.Client
             {
                 var request = new DeleteAgentRequest { Id = id};
                 var channel = GrpcChannel.ForAddress("https://localhost:5001");
-                var client = new AgentManager.AgentManagerClient(channel);
+                var client = new AgentManagerService.AgentManagerServiceClient(channel);
                 var reply = await client.DeleteAsync(request);
                 await PrintResults(reply.Response);
             }
@@ -100,9 +100,9 @@ namespace Interview.Client
             //Make update web call
             if (int.TryParse(contact, out int contactNumber) && int.TryParse(idNumber, out int id))
             {
-                var request = new UpdateAgentRequest {Id = id, Name = name.Trim(),ContactNumber = contactNumber };
+                var request = new AgentModel {Id = id, Name = name.Trim(),ContactNumber = contactNumber };
                 var channel = GrpcChannel.ForAddress("https://localhost:5001");
-                var client = new AgentManager.AgentManagerClient(channel);
+                var client = new AgentManagerService.AgentManagerServiceClient(channel);
                 var reply = await client.UpdateAsync(request);
                 await PrintResults(reply.Response);
             }
@@ -131,7 +131,7 @@ namespace Interview.Client
                         var searchName = Console.ReadLine();
                         var request = new ReadAgentRequest { Name = searchName.Trim() };
                         var channel = GrpcChannel.ForAddress("https://localhost:5001");
-                        var client = new AgentManager.AgentManagerClient(channel);
+                        var client = new AgentManagerService.AgentManagerServiceClient(channel);
                         using (var reply = client.ReadList(request))
                         {
                             if(reply != null)
@@ -152,7 +152,7 @@ namespace Interview.Client
                         {
                             var request2 = new ReadAgentRequest { ContactNumber = contact };
                             var channel2 = GrpcChannel.ForAddress("https://localhost:5001");
-                            var client2 = new AgentManager.AgentManagerClient(channel2);
+                            var client2 = new AgentManagerService.AgentManagerServiceClient(channel2);
                             var reply = client2.ReadSingle(request2);
                             if(reply != null)
                                 await PrintResults($"{reply.Id} {reply.Name} {reply.ContactNumber}");
@@ -182,9 +182,9 @@ namespace Interview.Client
             //Make web call
             if (int.TryParse(contact, out int contactNumber))
             {
-                var request = new CreateAgentRequest { Name = name, ContactNumber = contactNumber };
+                var request = new AgentModel { Name = name, ContactNumber = contactNumber };
                 var channel = GrpcChannel.ForAddress("https://localhost:5001");
-                var client = new AgentManager.AgentManagerClient(channel);
+                var client = new AgentManagerService.AgentManagerServiceClient(channel);
                 var result = await client.CreateAsync(request);
                 await PrintResults(result.Response);
             }

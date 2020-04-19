@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Interview.gRPC.Services
 {
-    public class AgentsService : AgentManager.AgentManagerBase
+    public class AgentsService : AgentManagerService.AgentManagerServiceBase
     {
         private readonly ILogger<AgentsService> _ilog;
         private readonly DataContext _context;
@@ -21,10 +21,10 @@ namespace Interview.gRPC.Services
             _context = context;
         }
 
-        public override async Task<CreateAgentReply> Create(CreateAgentRequest request, ServerCallContext context)
+        public override async Task<AgentTextResponse> Create(AgentModel request, ServerCallContext context)
         {
             //Create new resource
-            CreateAgentReply reply = new CreateAgentReply();
+            AgentTextResponse reply = new AgentTextResponse();
             Agent tempAgent = new Agent();
             tempAgent.ContactNumber = request.ContactNumber;
             tempAgent.Name = request.Name.Trim();
@@ -34,16 +34,16 @@ namespace Interview.gRPC.Services
             return await Task.FromResult(reply);
         }
 
-        public override async Task<ReadAgentReply> ReadSingle(ReadAgentRequest request, ServerCallContext context)
+        public override async Task<AgentModel> ReadSingle(ReadAgentRequest request, ServerCallContext context)
         {
             var agent = await _context.Agents.AsNoTracking().FirstOrDefaultAsync(a => a.ContactNumber == request.ContactNumber);
             if(agent != null)
-                return await Task.FromResult(new ReadAgentReply { Id = agent.AgentId, Name = agent.Name, ContactNumber = agent.ContactNumber });
+                return await Task.FromResult(new AgentModel { Id = agent.AgentId, Name = agent.Name, ContactNumber = agent.ContactNumber });
             else
-                return await Task.FromResult(new ReadAgentReply());
+                return await Task.FromResult(new AgentModel());
         }
 
-        public override async Task ReadList(ReadAgentRequest request, IServerStreamWriter<ReadAgentReply> responseStream, ServerCallContext context)
+        public override async Task ReadList(ReadAgentRequest request, IServerStreamWriter<AgentModel> responseStream, ServerCallContext context)
         {
             if (!string.IsNullOrEmpty(request.Name))
             {
@@ -51,18 +51,18 @@ namespace Interview.gRPC.Services
                 var agents = await _context.Agents.AsNoTracking().Where(a => a.Name.Contains(request.Name)).ToListAsync();
                 foreach(var agent in agents)
                 {
-                    await responseStream.WriteAsync(new ReadAgentReply { Id = agent.AgentId, Name = agent.Name, ContactNumber = agent.ContactNumber });
+                    await responseStream.WriteAsync(new AgentModel { Id = agent.AgentId, Name = agent.Name, ContactNumber = agent.ContactNumber });
                 }
             }
         }
 
 
-        public override async Task<UpdateAgentReply> Update(UpdateAgentRequest request, ServerCallContext context)
+        public override async Task<AgentTextResponse> Update(AgentModel request, ServerCallContext context)
         {
             //Find by id and update
             if (request.Id == 0)
             {
-                return new UpdateAgentReply { Response = "No agents by that ID" };
+                return new AgentTextResponse { Response = "No agents by that ID" };
             }
 
             //Update existing
@@ -72,17 +72,17 @@ namespace Interview.gRPC.Services
                 tempAgent.ContactNumber = request.ContactNumber;
                 tempAgent.Name = request.Name.Trim();
                 await _context.SaveChangesAsync();
-                return new UpdateAgentReply { Response = "Agent updated" };
+                return new AgentTextResponse { Response = "Agent updated" };
             }
-            return new UpdateAgentReply { Response = "No agents by that ID" };
+            return new AgentTextResponse { Response = "No agents by that ID" };
         }
 
-        public override async Task<DeleteAgentReply> Delete(DeleteAgentRequest request, ServerCallContext context)
+        public override async Task<AgentTextResponse> Delete(DeleteAgentRequest request, ServerCallContext context)
         {
             //Find by id and delete
             if (request.Id == 0)
             {
-               return new DeleteAgentReply { Response = "No agents by that ID" };
+               return new AgentTextResponse { Response = "No agents by that ID" };
             }
 
             var tempAgent = await _context.Agents.FirstOrDefaultAsync(a => a.AgentId == request.Id);
@@ -90,12 +90,12 @@ namespace Interview.gRPC.Services
             {
                 _context.Agents.Remove(tempAgent);
                 await _context.SaveChangesAsync();
-                return new DeleteAgentReply { Response = "Agent deleted" };
+                return new AgentTextResponse { Response = "Agent deleted" };
             }
             else
             {
 
-                return new DeleteAgentReply { Response = "No agents by that ID" };
+                return new AgentTextResponse { Response = "No agents by that ID" };
             }
         }
     }
