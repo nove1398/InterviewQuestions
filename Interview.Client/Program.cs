@@ -9,11 +9,11 @@ namespace Interview.Client
     class Program
     {
         public static InterviewMain init;
-        private static string UserName = "";
+
 
         static async Task Main(string[] args)
         {
-            var request = new CreateAgentRequest { Name = "joe",ContactNumber = 1234567891 };
+            /*var request = new CreateAgentRequest { Name = "joe",ContactNumber = 1234567891 };
             var channel = GrpcChannel.ForAddress("https://localhost:5001");
             var client = new AgentManager.AgentManagerClient(channel);
             using (var reply = client.Read(new ReadAgentRequest()))
@@ -24,30 +24,32 @@ namespace Interview.Client
                     Console.WriteLine($"{current.Response}");
 
                 }
-            }
+            }*/
             Console.WriteLine("What would you like to be called?");
-            UserName = Console.ReadLine()?.Trim() ?? "Unknown soldier" ;
+            string userName = Console.ReadLine()?.Trim() ?? "Unknown soldier" ;
 
-            init = new InterviewMain();
-            init.LoadMenu();
+            init = new InterviewMain(userName);
+            await init.LoadMenu();
         }
 
         public class InterviewMain
         {
-            private GrpcClient gRpc;
-            private RestClient restClient;
+            private GrpcClient Grpc;
+            private RestClient RestClient;
+            private string UserName = "";
 
-            public InterviewMain()
+            public InterviewMain(string name)
             {
-                gRpc = new GrpcClient();
-                restClient = new RestClient();
+                UserName = name;
+                Grpc = new GrpcClient();
+                RestClient = new RestClient();
             }
 
-            public void LoadMenu()
+            public async Task LoadMenu()
             {
                 Console.Clear();
                 Console.WriteLine("++++++++++ Main Menu ++++++++++");
-                Console.WriteLine("What would you like to work with today?");
+                Console.WriteLine($"What would you like to work with today {UserName}?");
                 Console.WriteLine("1. gRPC Client");
                 Console.WriteLine("2. REST Client");
                 Console.WriteLine("3. Exit");
@@ -57,43 +59,43 @@ namespace Interview.Client
                     switch (selectedOption)
                     {
                         case 1:
-                            GrpcMenu();
+                            await GrpcMenu();
                             break;
                         case 2:
-                            RestMenu();
+                            await RestMenu();
                             break;
                         case 3:
                             Environment.Exit(0);
                             break;
                         default:
-                            ErrorDisplay();
+                            await ErrorDisplay();
                             break;
                     }
 
                 }
                 else
                 {
-                    ErrorDisplay();
+                    await ErrorDisplay();
                 }
             }
 
-            private void ErrorDisplay()
+            private async Task ErrorDisplay()
             {
                 Console.WriteLine("Invalid selection");
-                LoadMenu();
+                await LoadMenu();
             }
 
-            private void GrpcMenu()
+            private async Task GrpcMenu()
             {
                 //Call grpc class and anything else
-                gRpc.LoadMenu();
+                await Grpc.LoadMenu();
                
             }
 
-            private void RestMenu()
+            private async Task RestMenu()
             {
                 //Call rest class and anything else
-                restClient.LoadMenu();
+                await RestClient.LoadMenu();
             }
         }
 

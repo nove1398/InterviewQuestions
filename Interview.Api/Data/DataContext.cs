@@ -14,6 +14,7 @@ namespace Interview.Api.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            //Seed data for DB
             List<Agent> defaultAgents = new List<Agent>();
             for(int i = 1; i < 50; i++)
             {

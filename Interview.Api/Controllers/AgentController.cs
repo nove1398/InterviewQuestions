@@ -40,12 +40,12 @@ namespace Interview.Api.Controllers
                 tempAgent.Name = newAgent.Name.Trim();
                 _context.Agents.Add(tempAgent);
                 await _context.SaveChangesAsync();
-                return CreatedAtAction("Create",new JsonResult(new { response = "Created agent" }));
+                return CreatedAtAction("Create",new JsonResult(new ApiResponse { Response = "Created agent" }));
             }
             else
             {
 
-                return BadRequest(new JsonResult(new { response = "Invalid agent data" }));
+                return new JsonResult(new ApiResponse { Response = "Invalid agent data" });
             }
        
         }
@@ -57,26 +57,26 @@ namespace Interview.Api.Controllers
             if (!string.IsNullOrEmpty(name))
             {
                 var agents = await _context.Agents.AsNoTracking().Where(a => a.Name.Contains(name)).ToListAsync();
-                return Ok(new JsonResult(new { response= "Agents found", data = agents }));
+                return new JsonResult(new ApiResponse { Response = "Agents found", DataList = agents });
             }
             else if(contact.HasValue)
             {
                 var agent = await _context.Agents.AsNoTracking().FirstOrDefaultAsync(a => a.ContactNumber == contact);
-                return Ok(new JsonResult(new { response ="Agent found", data = agent }));
+                return new JsonResult(new ApiResponse { Response = "Agent found", Data = agent });
             }
             else
             {
-                 return NotFound(new JsonResult(new { response = "Invalid search criteria" }));
+                 return new JsonResult(new ApiResponse { Response = "Invalid search criteria" });
 
             }
         }
 
-        [HttpPut("{id:int}")]
-        public async Task<IActionResult> Update([FromBody] Agent newAgent,int? id)
+        [HttpPut]
+        public async Task<IActionResult> Update([FromBody] Agent newAgent,int? id = null)
         {
             if(id == null)
             {
-                return BadRequest(new JsonResult(new { response = "No agents by that ID" }));
+                return new JsonResult(new ApiResponse { Response = "No agents by that ID" });
             }
 
             //Update existing
@@ -86,18 +86,18 @@ namespace Interview.Api.Controllers
                 tempAgent.ContactNumber = newAgent.ContactNumber;
                 tempAgent.Name = newAgent.Name.Trim();
                 await _context.SaveChangesAsync();
-                return Ok(new JsonResult(new { response = "Agent updated" }));
+                return new JsonResult(new ApiResponse{ Response = "Agent updated" });
             }
-                return NotFound(new JsonResult(new { response = "No agents by that ID" }));
+                return new JsonResult(new ApiResponse{ Response = "No agents by that ID" });
             
         }
 
-        [HttpDelete("{id:int}")]
-        public async Task<IActionResult> Delete(int? id)
+        [HttpDelete]
+        public async Task<IActionResult> Delete(int? id = null)
         {
             if (id == null)
             {
-                return BadRequest(new JsonResult(new { response = "No agents by that ID" }));
+                return new JsonResult(new { response = "No agents by that ID" });
             }
 
             var tempAgent = await  _context.Agents.FirstOrDefaultAsync(a => a.AgentId == id);
@@ -105,12 +105,12 @@ namespace Interview.Api.Controllers
             {
                 _context.Agents.Remove(tempAgent);
                 await _context.SaveChangesAsync();
-                return Ok(new JsonResult(new { response = "Agent deleted" }));
+                return new JsonResult(new ApiResponse{ Response = "Agent deleted" });
             }
             else
             {
 
-                return NotFound(new JsonResult(new { response = "Invalid agent ID" }));
+                return new JsonResult(new ApiResponse { Response = "Invalid agent ID" });
             }
 
         }

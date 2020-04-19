@@ -3,6 +3,7 @@ using Interview.gRPC;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using static Interview.Client.Program;
 
 namespace Interview.Client
@@ -15,7 +16,7 @@ namespace Interview.Client
             
         }
 
-        public void LoadMenu()
+        public async Task LoadMenu()
         {
             Console.Clear();
             Console.WriteLine("-===++~gRPC Client~++===-");
@@ -39,7 +40,7 @@ namespace Interview.Client
                         Delete();
                         break;
                     case 5:
-                        init.LoadMenu();
+                        await init.LoadMenu();
                         break;
                     default:
                         ErrorDisplay();
@@ -49,7 +50,7 @@ namespace Interview.Client
             }
             else
             {
-                ErrorDisplay();
+                await ErrorDisplay();
             }
         }
 
@@ -87,7 +88,7 @@ namespace Interview.Client
             Console.WriteLine("");
         }
 
-        private void Read(bool error = false)
+        private async Task Read(bool error = false)
         {
             if (error)
             {
@@ -96,6 +97,7 @@ namespace Interview.Client
             Console.WriteLine("    Read    ");
             Console.WriteLine("++++++++++++++");
             Console.WriteLine("");
+
         }
 
         private void Create(bool error = false)
@@ -115,10 +117,10 @@ namespace Interview.Client
             Console.WriteLine("");
         }
 
-        private void ErrorDisplay()
+        private async Task ErrorDisplay()
         {
             Console.WriteLine("Invalid input");
-            LoadMenu();
+            await LoadMenu();
         }
     }
 }
